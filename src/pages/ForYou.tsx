@@ -1,95 +1,168 @@
+import { useState, useRef } from "react";
 import BottomNav from "@/components/BottomNav";
-import { Play } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Heart, Share2, PlayCircle, Pause } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const ForYou = () => {
-  const series = [
-    {
-      id: "1",
-      title: "Watch Out, I'm The Lady Boss",
-      episodes: [
-        { id: "1-1", episode: 1, thumbnail: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&h=500&fit=crop", views: "12M", isLocked: false },
-        { id: "1-2", episode: 2, thumbnail: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=500&fit=crop", views: "11M", isLocked: false },
-        { id: "1-3", episode: 3, thumbnail: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=300&h=500&fit=crop", views: "10M", isLocked: true },
-        { id: "1-4", episode: 4, thumbnail: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300&h=500&fit=crop", views: "9M", isLocked: true },
-      ],
-    },
-    {
-      id: "2",
-      title: "Mafia's Good Girl",
-      episodes: [
-        { id: "2-1", episode: 1, thumbnail: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=300&h=500&fit=crop", views: "45M", isLocked: false },
-        { id: "2-2", episode: 2, thumbnail: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=500&fit=crop", views: "43M", isLocked: false },
-        { id: "2-3", episode: 3, thumbnail: "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=300&h=500&fit=crop", views: "41M", isLocked: true },
-        { id: "2-4", episode: 4, thumbnail: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&h=500&fit=crop", views: "39M", isLocked: true },
-      ],
-    },
-    {
-      id: "3",
-      title: "From Cell to Crown",
-      episodes: [
-        { id: "3-1", episode: 1, thumbnail: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&h=500&fit=crop", views: "2.1M", isLocked: false },
-        { id: "3-2", episode: 2, thumbnail: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=500&fit=crop", views: "1.9M", isLocked: true },
-        { id: "3-3", episode: 3, thumbnail: "https://images.unsplash.com/photo-1581822261290-991b38693d1b?w=300&h=500&fit=crop", views: "1.8M", isLocked: true },
-      ],
-    },
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isLiked, setIsLiked] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const currentEpisode = {
+    id: "1-1",
+    seriesId: "1",
+    title: "Watch Out, I'm The Lady Boss",
+    episode: 1,
+    subtitle: "CEO",
+    views: "12.5M",
+    likes: 234500,
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+  };
+
+  const upcomingEpisodes = [
+    { id: "1-2", episode: 2, thumbnail: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=250&fit=crop", isLocked: false },
+    { id: "1-3", episode: 3, thumbnail: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=150&h=250&fit=crop", isLocked: true },
+    { id: "1-4", episode: 4, thumbnail: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=150&h=250&fit=crop", isLocked: true },
   ];
 
-  return (
-    <div className="min-h-screen bg-background pb-20">
-      {/* Header */}
-      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-lg border-b border-border">
-        <div className="max-w-md mx-auto px-4 py-4">
-          <h1 className="text-xl font-bold">For You</h1>
-        </div>
-      </header>
+  const handlePlayPause = () => {
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
 
-      <main className="max-w-md mx-auto px-4 py-6 space-y-8">
-        {series.map((show) => (
-          <div key={show.id} className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold">{show.title}</h2>
-              <Link to={`/series/${show.id}`} className="text-sm text-primary">
-                View All
-              </Link>
-            </div>
-            
-            {/* Horizontal scroll of episodes */}
-            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-              {show.episodes.map((ep) => (
-                <Link
-                  key={ep.id}
-                  to={ep.isLocked ? `/series/${show.id}` : `/player/${show.id}/${ep.episode}`}
-                  className="flex-shrink-0 w-32 group"
-                >
-                  <div className="relative aspect-[9/16] rounded-lg overflow-hidden bg-card mb-2">
-                    <img
-                      src={ep.thumbnail}
-                      alt={`Episode ${ep.episode}`}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    {/* Lock overlay */}
-                    {ep.isLocked && (
-                      <div className="absolute inset-0 bg-black/60 flex items-center justify-center backdrop-blur-sm">
-                        <div className="text-center">
-                          <div className="text-3xl mb-1">🔒</div>
-                          <div className="text-xs text-white font-medium">5 Coins</div>
-                        </div>
-                      </div>
-                    )}
-                    {/* Views */}
-                    <div className="absolute bottom-2 right-2 flex items-center gap-1 text-white text-xs font-bold drop-shadow-lg">
-                      <Play className="w-3 h-3 fill-white" />
-                      {ep.views}
-                    </div>
-                  </div>
-                  <p className="text-sm font-medium text-center">Episode {ep.episode}</p>
-                </Link>
-              ))}
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: currentEpisode.title,
+          text: `Check out ${currentEpisode.title} - Episode ${currentEpisode.episode}`,
+          url: window.location.href,
+        });
+      } catch (err) {
+        console.log('Share cancelled');
+      }
+    }
+  };
+
+  return (
+    <div className="h-screen w-screen bg-black overflow-hidden relative">
+      {/* Video Player */}
+      <div className="absolute inset-0" onClick={handlePlayPause}>
+        <video
+          ref={videoRef}
+          src={currentEpisode.videoUrl}
+          className="w-full h-full object-cover"
+          autoPlay
+          loop
+          playsInline
+          muted
+        />
+        
+        {/* Dark overlay for better text readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40" />
+        
+        {/* Play/Pause overlay */}
+        {!isPlaying && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <PlayCircle className="w-20 h-20 text-white/80" />
+          </div>
+        )}
+      </div>
+
+      {/* Bottom Info */}
+      <div className="absolute bottom-24 left-0 right-0 px-4 z-10 pb-2">
+        <h2 className="text-white text-xl font-bold mb-1">{currentEpisode.title}</h2>
+        <p className="text-white/80 text-sm mb-3">Episode {currentEpisode.episode} • {currentEpisode.subtitle}</p>
+        <p className="text-white/70 text-xs">{currentEpisode.views} views</p>
+      </div>
+
+      {/* Right Side Actions */}
+      <div className="absolute right-3 bottom-32 z-20 flex flex-col gap-6 items-center">
+        {/* Like Button */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsLiked(!isLiked);
+          }}
+          className="flex flex-col items-center gap-1 group"
+        >
+          <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center group-active:scale-90 transition-transform">
+            <Heart
+              className={cn(
+                "w-7 h-7 transition-all",
+                isLiked ? "fill-pink-500 text-pink-500 scale-110" : "text-white"
+              )}
+            />
+          </div>
+          <span className="text-white text-xs font-medium">
+            {(currentEpisode.likes + (isLiked ? 1 : 0)).toLocaleString()}
+          </span>
+        </button>
+
+        {/* Episodes List Button */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+          className="flex flex-col items-center gap-1 group relative"
+        >
+          <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center group-active:scale-90 transition-transform">
+            <div className="relative">
+              <div className="w-7 h-7 flex flex-col gap-0.5">
+                <div className="h-1 bg-white rounded" />
+                <div className="h-1 bg-white rounded" />
+                <div className="h-1 bg-white rounded" />
+              </div>
             </div>
           </div>
-        ))}
-      </main>
+          <span className="text-white text-xs font-medium">Episodes</span>
+          
+          {/* Episodes Popup */}
+          <div className="absolute bottom-16 right-0 hidden group-active:flex flex-col gap-2 bg-black/90 backdrop-blur-md rounded-lg p-3 min-w-[140px]">
+            <p className="text-white text-xs font-bold mb-1">Next Episodes</p>
+            {upcomingEpisodes.map((ep) => (
+              <div key={ep.id} className="relative">
+                <img
+                  src={ep.thumbnail}
+                  alt={`Episode ${ep.episode}`}
+                  className="w-full aspect-[9/16] rounded object-cover"
+                />
+                {ep.isLocked && (
+                  <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded backdrop-blur-sm">
+                    <div className="text-center">
+                      <div className="text-xl mb-0.5">🔒</div>
+                      <div className="text-[10px] text-white font-medium">5 Coins</div>
+                    </div>
+                  </div>
+                )}
+                <div className="absolute bottom-1 left-1 text-white text-[10px] font-bold drop-shadow">
+                  EP {ep.episode}
+                </div>
+              </div>
+            ))}
+          </div>
+        </button>
+
+        {/* Share Button */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleShare();
+          }}
+          className="flex flex-col items-center gap-1 group"
+        >
+          <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center group-active:scale-90 transition-transform">
+            <Share2 className="w-6 h-6 text-white" />
+          </div>
+          <span className="text-white text-xs font-medium">Share</span>
+        </button>
+      </div>
 
       <BottomNav />
     </div>

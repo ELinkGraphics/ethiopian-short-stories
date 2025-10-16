@@ -9,6 +9,7 @@ import CoinsStore from "./pages/CoinsStore";
 import Profile from "./pages/Profile";
 import SeriesDetail from "./pages/SeriesDetail";
 import Player from "./pages/Player";
+import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/profile" element={<Profile />} />
           <Route path="/series/:id" element={<SeriesDetail />} />
           <Route path="/player/:seriesId/:episodeId" element={<Player />} />
+          <Route path="/install" element={<Install />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
