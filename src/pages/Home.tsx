@@ -1,8 +1,10 @@
 import { useState } from "react";
 import BottomNav from "@/components/BottomNav";
-import { Search, Gift, Bell, Play } from "lucide-react";
+import { Search, Bell, Play, Coins } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import HeroCarousel from "@/components/HeroCarousel";
+import DailyReward from "@/components/DailyReward";
 
 const Home = () => {
   const [activeTab, setActiveTab] = useState("popular");
@@ -91,8 +93,10 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
+      <DailyReward />
+      
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-lg">
+      <header className="sticky top-0 z-40 glass border-b border-border/50">
         <div className="max-w-md mx-auto px-4 py-3">
           {/* Search bar and icons */}
           <div className="flex items-center gap-3 mb-4">
@@ -100,18 +104,19 @@ const Home = () => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <input
                 type="text"
-                placeholder="I Rise, You Fall, That's the Rule (D..."
-                className="w-full bg-card/50 border border-border rounded-full pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                placeholder="Search dramas..."
+                className="w-full glass border border-border/50 rounded-full pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
               />
             </div>
             <div className="flex items-center gap-2">
-              <button className="relative p-2">
+              {/* Coin Balance */}
+              <Link to="/coins" className="flex items-center gap-1.5 bg-gold/20 text-gold px-3 py-1.5 rounded-full font-bold text-sm hover-lift tap-scale">
+                <Coins className="w-4 h-4" />
+                <span>125</span>
+              </Link>
+              <button className="relative p-2 tap-scale">
                 <Bell className="w-6 h-6 text-foreground" />
-                <span className="absolute -top-1 -right-1 bg-pink-600 text-white text-xs rounded-full px-1.5 py-0.5 font-bold">25%</span>
-              </button>
-              <button className="relative p-2">
-                <Gift className="w-6 h-6 text-foreground" />
-                <span className="absolute -top-1 -right-1 bg-destructive text-white text-xs rounded-full px-1.5 py-0.5 font-bold">+10</span>
+                <span className="absolute -top-1 -right-1 bg-destructive text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold animate-pulse">3</span>
               </button>
             </div>
           </div>
@@ -141,29 +146,47 @@ const Home = () => {
 
       {/* Grid */}
       <main className="max-w-md mx-auto px-4 py-4">
+        {/* Hero Carousel */}
+        <HeroCarousel />
+        
+        {/* Live Watching Counter */}
+        <div className="flex items-center justify-center gap-2 mb-6 glass rounded-full px-4 py-2 w-fit mx-auto animate-pulse">
+          <div className="w-2 h-2 bg-live-indicator rounded-full animate-ping" />
+          <span className="text-sm font-medium text-white">234K watching now</span>
+        </div>
+        
         <div className="grid grid-cols-3 gap-3">
           {dramas.map((drama) => (
             <Link key={drama.id} to={`/series/${drama.id}`} className="group">
-              <div className="relative aspect-[2/3] rounded-lg overflow-hidden bg-card mb-2">
+              <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-card mb-2 hover-lift tap-scale">
                 <img
                   src={drama.thumbnail}
                   alt={drama.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
-                {/* Badge */}
+                {/* Stronger gradient */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
+                
+                {/* Badge with glow */}
                 {drama.badge && (
-                  <div className={cn("absolute top-2 right-2 px-2 py-1 rounded text-xs font-bold text-white", drama.badgeColor)}>
+                  <div className={cn(
+                    "absolute top-2 right-2 px-2.5 py-1 rounded-full text-xs font-bold text-white backdrop-blur-sm shadow-lg",
+                    drama.badge === "Following" && "bg-primary/90 glow-primary",
+                    drama.badge === "Hot" && "bg-destructive/90 animate-pulse",
+                    drama.badge === "New" && "bg-gold/90",
+                    drama.badge === "Exclusive" && "bg-accent/90 glow-pink"
+                  )}>
                     {drama.badge}
                   </div>
                 )}
                 {/* Views */}
-                <div className="absolute bottom-2 right-2 flex items-center gap-1 text-white text-xs font-bold drop-shadow-lg">
+                <div className="absolute bottom-2 right-2 flex items-center gap-1 glass px-2 py-1 rounded-full text-white text-xs font-bold">
                   <Play className="w-3 h-3 fill-white" />
                   {drama.views}
                 </div>
               </div>
-              <h3 className="text-sm font-medium line-clamp-2 mb-0.5">{drama.title}</h3>
-              <p className="text-xs text-muted-foreground">{drama.subtitle}</p>
+              <h3 className="text-sm font-bold line-clamp-2 mb-0.5 leading-tight">{drama.title}</h3>
+              <p className="text-xs text-muted-foreground font-medium">{drama.subtitle}</p>
             </Link>
           ))}
         </div>

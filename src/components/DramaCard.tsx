@@ -17,48 +17,50 @@ const DramaCard = ({ id, title, episode, thumbnail, likes, comments, isLocked }:
   const [isLiked, setIsLiked] = useState(false);
 
   return (
-    <Link to={`/series/${id}`}>
-      <div className="relative aspect-[9/16] rounded-2xl overflow-hidden bg-gradient-dark shadow-card hover:shadow-neon transition-all duration-300 group">
-        {/* Thumbnail */}
+    <Link to={`/series/${id}`} className="block group">
+      <div className="relative aspect-[9/16] rounded-xl overflow-hidden hover-lift tap-scale">
         <img 
           src={thumbnail} 
           alt={title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
         
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+        {/* Stronger gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
         
-        {/* Lock Badge */}
+        {/* Lock overlay with animation */}
         {isLocked && (
-          <div className="absolute top-4 right-4 bg-accent/90 backdrop-blur-sm rounded-full p-3 shadow-neon">
-            <Lock className="w-5 h-5 text-accent-foreground" />
+          <div className="absolute inset-0 glass flex items-center justify-center">
+            <div className="text-center animate-pulse">
+              <div className="text-5xl mb-3 drop-shadow-lg animate-bounce">🔒</div>
+              <div className="text-white text-sm font-bold mb-1">5 Coins</div>
+              <div className="text-white/70 text-xs">(2 ETB)</div>
+            </div>
           </div>
         )}
         
-        {/* Content */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 space-y-3">
-          <div>
-            <h3 className="text-xl font-bold text-foreground mb-1">{title}</h3>
-            <p className="text-sm text-muted-foreground">Episode {episode}</p>
-          </div>
+        {/* Bottom info with better shadows */}
+        <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/90 to-transparent">
+          <h3 className="text-white text-sm font-bold mb-1 line-clamp-2 drop-shadow-lg">
+            {title}
+          </h3>
+          <p className="text-white/90 text-xs mb-2 font-medium">Episode {episode}</p>
           
-          {/* Actions */}
-          <div className="flex items-center gap-6">
+          {/* Interaction buttons with glow */}
+          <div className="flex items-center gap-4 text-white">
             <button
               onClick={(e) => {
                 e.preventDefault();
                 setIsLiked(!isLiked);
               }}
-              className="flex items-center gap-2 transition-transform hover:scale-110"
+              className="flex items-center gap-1.5 text-xs font-medium transition-all hover:scale-110"
             >
-              <Heart className={cn("w-5 h-5", isLiked && "fill-primary text-primary")} />
-              <span className="text-sm font-medium">{likes + (isLiked ? 1 : 0)}</span>
+              <Heart className={`w-4 h-4 transition-all ${isLiked ? 'fill-pink-500 text-pink-500 scale-125' : ''}`} />
+              <span className={isLiked ? 'text-pink-500' : ''}>{(likes + (isLiked ? 1 : 0)).toLocaleString()}</span>
             </button>
-            
-            <div className="flex items-center gap-2">
-              <MessageCircle className="w-5 h-5" />
-              <span className="text-sm font-medium">{comments}</span>
+            <div className="flex items-center gap-1.5 text-xs font-medium">
+              <MessageCircle className="w-4 h-4" />
+              <span>{comments.toLocaleString()}</span>
             </div>
           </div>
         </div>
